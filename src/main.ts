@@ -8,8 +8,6 @@ import {
 } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER, WinstonModule } from 'nest-winston';
 import { json } from 'body-parser';
-import * as passport from 'passport';
-import * as session from 'express-session';
 
 import { AppModule } from './app.module';
 import { SharedModule } from './shared/share.module';
@@ -19,7 +17,6 @@ import { QueryFailedFilter } from './filters/query-failed.filter';
 import { loggerOption } from './logger/logger.option';
 import { ProcessLogger } from './logger/process.logger';
 import { setupSwagger } from './setup-swagger';
-import { cookieOption, sessionConfig } from './constants';
 
 async function bootstrap() {
   const jsonParseMiddleware = json({ limit: '50mb' });
@@ -31,17 +28,6 @@ async function bootstrap() {
   app.use(helmet());
   app.use(jsonParseMiddleware);
   app.enableCors({ credentials: true });
-
-  app.use(
-    session({
-      secret: sessionConfig.secret,
-      resave: false,
-      saveUninitialized: false,
-      cookie: cookieOption,
-    }),
-  );
-  app.use(passport.initialize());
-  app.use(passport.session());
 
   const reflector = app.get(Reflector);
 
@@ -71,6 +57,7 @@ async function bootstrap() {
   }
 
   const port = configService.appConfig.port;
+
   await app.listen(port);
 }
 
