@@ -1,41 +1,49 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
+import { plainToClass, plainToInstance } from 'class-transformer';
 
-import { AuthService } from './auth.service';
-import { LoginPayloadDto } from './dto/LoginPayloadDto';
-import { UserLoginDto } from './dto/UserLoginDto';
 import UserService from '../user/user.service';
 import { UserDto } from '../user/dto/user.dto';
-import { UserRegisterDto } from './dto/UserRegisterDto';
-import { plainToInstance } from 'class-transformer';
+import { UserRegisterDto } from './dto/RegisterDto';
+import { LocalAuthGuard } from '../../guards/local.auth.guard';
+import { AuthenticatedGuard } from '../../guards/authenticated.guard';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(
-    private userService: UserService,
-    private authService: AuthService,
-  ) {}
+  constructor(private userService: UserService) {}
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: LoginPayloadDto,
+    type: UserDto,
     description: 'User info with access token',
   })
-  async userLogin(
-    @Body() userLoginDto: UserLoginDto,
-  ): Promise<LoginPayloadDto> {
-    const userEntity = await this.authService.validateUser(userLoginDto);
+  async userLogin(@Req() req: Request): Promise<UserDto> {
+    const userEntity = req.user;
 
-    const token = await this.authService.createAccessToken({
-      userId: userEntity.id,
-    });
+    return plainToInstance(UserDto, userEntity);
+  }
 
-    return plainToInstance(LoginPayloadDto, {
-      userEntity: plainToInstance(UserDto, userEntity),
-      token,
-    });
+  @UseGuards(AuthenticatedGuard)
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: UserDto,
+  })
+  async me(@Req() req: Request) {
+    return plainToClass(UserDto, req.user);
   }
 
   @Post('register')

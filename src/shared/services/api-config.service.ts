@@ -77,14 +77,7 @@ export class ApiConfigService {
       bucketRegion: this.getString('AWS_S3_BUCKET_REGION'),
       bucketApiVersion: this.getString('AWS_S3_API_VERSION'),
       bucketName: this.getString('AWS_S3_BUCKET_NAME'),
-    };
-  }
-
-  get authConfig() {
-    return {
-      privateKey: this.getString('JWT_PRIVATE_KEY'),
-      publicKey: this.getString('JWT_PUBLIC_KEY'),
-      jwtExpirationTime: this.getNumber('JWT_EXPIRATION_TIME'),
+      signatureVersion: this.getString('AWS_S3_SIGNATURE_VER'),
     };
   }
 

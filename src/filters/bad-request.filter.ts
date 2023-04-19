@@ -27,6 +27,9 @@ export class UnprocessableFilter
     for (const validationError of validationErrors) {
       const children = validationError.children;
 
+      delete validationError.target;
+      delete validationError.value;
+
       if (children && !isEmpty(children)) {
         this.validationFilter(children);
 
@@ -39,14 +42,6 @@ export class UnprocessableFilter
 
       if (!constraints) {
         return;
-      }
-
-      for (const [constraintKey, constraint] of Object.entries(constraints)) {
-        // convert default messages
-        if (!constraint) {
-          // convert error message to error.fields.{key} syntax for i18n translation
-          constraints[constraintKey] = `error.fields`;
-        }
       }
     }
   }
