@@ -21,10 +21,10 @@ export class UserSubscriber implements EntitySubscriberInterface<UserEntity> {
   }
 
   beforeUpdate(event: UpdateEvent<UserEntity>): void {
-    // FIXME check event.databaseEntity.password
     const entity = event.entity as UserEntity;
 
     if (entity.password !== event.databaseEntity.password) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       entity.password = generateHash(entity.password!);
     }
   }
