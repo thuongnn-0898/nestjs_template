@@ -23,13 +23,6 @@ export class RequestLoggerMiddleware implements NestMiddleware {
     );
     this.asyncRequestContext.set(requestId);
 
-    this.logger.debug('Alo');
-    this.logger.warn('Alo 1');
-    this.logger.log('Alo 2');
-    this.logger.error('Alo 3');
-    this.logger.verbose('Alo 4');
-    this.logger.debug('postArticle completed');
-
     next();
   }
 }
